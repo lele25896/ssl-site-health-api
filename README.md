@@ -55,7 +55,7 @@ gsutil mb -l europe-west1 gs://ssl-site-health-tfstate
 gcloud artifacts repositories create ssl-site-health-api --repository-format=docker --location=europe-west1
 docker build -t europe-west1-docker.pkg.dev/PROJECT_ID/ssl-site-health-api/ssl-site-health-api:latest .
 docker push europe-west1-docker.pkg.dev/PROJECT_ID/ssl-site-health-api/ssl-site-health-api:latest
-gcloud run deploy ssl-site-health-api --image europe-west1-docker.pkg.dev/PROJECT_ID/ssl-site-health-api/ssl-site-health-api:latest --region europe-west1 --allow-unauthenticated --memory 256Mi
+gcloud run deploy ssl-site-health-api --image europe-west1-docker.pkg.dev/PROJECT_ID/ssl-site-health-api/ssl-site-health-api:latest --region europe-west1 --allow-unauthenticated --memory 256Mi --max-instances 2
 ```
 
 Then set `terraform/terraform.tfvars` `project_id`, `terraform import` the

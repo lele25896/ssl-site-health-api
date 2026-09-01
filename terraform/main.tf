@@ -31,9 +31,9 @@ resource "google_project_service" "artifact_registry" {
 
 resource "google_artifact_registry_repository" "api" {
   repository_id = var.service_name
-  format         = "DOCKER"
-  location       = var.region
-  depends_on     = [google_project_service.artifact_registry]
+  format        = "DOCKER"
+  location      = var.region
+  depends_on    = [google_project_service.artifact_registry]
 }
 
 resource "google_cloud_run_v2_service" "api" {
@@ -41,6 +41,10 @@ resource "google_cloud_run_v2_service" "api" {
   location = var.region
 
   template {
+    # cost cap: public endpoint on a small budget
+    scaling {
+      max_instance_count = 2
+    }
     containers {
       image = "${var.region}-docker.pkg.dev/${var.project_id}/${var.service_name}/${var.service_name}:latest"
       resources {

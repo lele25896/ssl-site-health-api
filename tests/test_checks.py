@@ -29,7 +29,7 @@ def test_normalize_domain_rejects_empty():
 
 @pytest.mark.parametrize(
     "ip",
-    ["127.0.0.1", "10.0.0.1", "172.16.0.1", "192.168.1.1", "169.254.1.1", "0.0.0.0", "::1"],
+    ["127.0.0.1", "10.0.0.1", "172.16.0.1", "192.168.1.1", "169.254.1.1", "0.0.0.0", "::1", "100.64.1.1", "::ffff:10.0.0.1"],
 )
 def test_guard_rejects_non_public_ip(ip):
     assert _is_public_ip(ip) is False

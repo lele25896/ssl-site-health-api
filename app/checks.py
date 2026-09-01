@@ -31,11 +31,9 @@ def normalize_domain(raw: str) -> str:
 
 
 def _is_public_ip(ip: str) -> bool:
-    addr = ipaddress.ip_address(ip)
-    return not (
-        addr.is_private or addr.is_loopback or addr.is_link_local
-        or addr.is_reserved or addr.is_multicast or addr.is_unspecified
-    )
+    # is_global (not is_private) — is_private misses 100.64.0.0/10 (CGNAT,
+    # used by GCP internal ranges) and other non-routable blocks.
+    return ipaddress.ip_address(ip).is_global
 
 
 def _resolve_and_guard(domain: str) -> str:
@@ -48,7 +46,8 @@ def _resolve_and_guard(domain: str) -> str:
     with a rebound answer can't slip a private address past the guard.
     """
     try:
-        ip = socket.getaddrinfo(domain, 443)[0][4][0]
+        # AF_INET: Cloud Run egress is IPv4-only
+        ip = socket.getaddrinfo(domain, 443, socket.AF_INET)[0][4][0]
     except socket.gaierror as e:
         raise DomainError(f"could not resolve domain: {e}") from None
 
