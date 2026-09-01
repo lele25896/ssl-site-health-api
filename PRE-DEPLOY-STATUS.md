@@ -4,7 +4,7 @@ Service: `ssl-site-health-api` · GCP project `site-health-api-178823` · region
 
 ## Verdict
 
-Ready to deploy. Security review done, fixes applied, all checks green. Nothing deployed yet.
+**Deployed 2026-09-02.** Service URL: `https://ssl-site-health-api-74615653496.europe-west1.run.app`, revision `ssl-site-health-api-00001-p8s`. Smoke-tested `/check?domain=example.com` — 200 OK.
 
 ## Checks run
 
@@ -39,9 +39,6 @@ Ready to deploy. Security review done, fixes applied, all checks green. Nothing 
 
 1. ~~Commit these changes and push~~ — done (commit `0a767b5`, pushed to `origin/master`).
 2. ~~Rebuild + push image with fixes 1–3~~ — done, digest `sha256:a7468cc5d6...`.
-3. Deploy (needs explicit go-ahead — first public endpoint on this billed project):
-   ```bash
-   gcloud run deploy ssl-site-health-api --image europe-west1-docker.pkg.dev/site-health-api-178823/ssl-site-health-api/ssl-site-health-api:latest --region europe-west1 --allow-unauthenticated --memory 256Mi --max-instances 2 --project=site-health-api-178823
-   ```
+3. ~~Deploy~~ — done, `ssl-site-health-api-00001-p8s` serving 100% traffic.
 4. `terraform import` bucket, artifact repo, Cloud Run service; set repo secrets `WIF_PROVIDER`, `WIF_SERVICE_ACCOUNT`, `GCP_PROJECT_ID`.
-5. Rapid Studio project `api_22018346-fc29-432a-9cd7-fdd39fe6473c`: wire endpoint, add proxy-secret check, finish Hub Listing + Monetize (free 15/day → Pro $4.99 → Ultra $9.99).
+5. Rapid Studio project `api_22018346-fc29-432a-9cd7-fdd39fe6473c`: wire endpoint (`https://ssl-site-health-api-74615653496.europe-west1.run.app`), add proxy-secret check, finish Hub Listing + Monetize (free 15/day → Pro $4.99 → Ultra $9.99).
