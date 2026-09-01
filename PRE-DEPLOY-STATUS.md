@@ -37,11 +37,11 @@ Ready to deploy. Security review done, fixes applied, all checks green. Nothing 
 
 ## Next steps
 
-1. Commit these changes and push (CI test job passes; terraform/deploy jobs fail until step 3).
-2. Deploy (needs explicit go-ahead — first public endpoint on this billed project):
+1. ~~Commit these changes and push~~ — done (commit `0a767b5`, pushed to `origin/master`).
+2. ~~Rebuild + push image with fixes 1–3~~ — done, digest `sha256:a7468cc5d6...`.
+3. Deploy (needs explicit go-ahead — first public endpoint on this billed project):
    ```bash
    gcloud run deploy ssl-site-health-api --image europe-west1-docker.pkg.dev/site-health-api-178823/ssl-site-health-api/ssl-site-health-api:latest --region europe-west1 --allow-unauthenticated --memory 256Mi --max-instances 2 --project=site-health-api-178823
    ```
-   Note: pushed image predates fixes 1–3. Rebuild + push before deploy, or deploy now and let CI roll the fixed image once secrets exist.
-3. `terraform import` bucket, artifact repo, Cloud Run service; set repo secrets `WIF_PROVIDER`, `WIF_SERVICE_ACCOUNT`, `GCP_PROJECT_ID`.
-4. Rapid Studio project `api_22018346-fc29-432a-9cd7-fdd39fe6473c`: wire endpoint, add proxy-secret check, finish Hub Listing + Monetize (free 15/day → Pro $4.99 → Ultra $9.99).
+4. `terraform import` bucket, artifact repo, Cloud Run service; set repo secrets `WIF_PROVIDER`, `WIF_SERVICE_ACCOUNT`, `GCP_PROJECT_ID`.
+5. Rapid Studio project `api_22018346-fc29-432a-9cd7-fdd39fe6473c`: wire endpoint, add proxy-secret check, finish Hub Listing + Monetize (free 15/day → Pro $4.99 → Ultra $9.99).
