@@ -30,6 +30,12 @@ resource "google_project_service" "iam_credentials" {
   disable_on_destroy = false
 }
 
+# required by google_project_service itself to manage other services
+resource "google_project_service" "resource_manager" {
+  service            = "cloudresourcemanager.googleapis.com"
+  disable_on_destroy = false
+}
+
 resource "google_project_service" "artifact_registry" {
   service            = "artifactregistry.googleapis.com"
   disable_on_destroy = false
