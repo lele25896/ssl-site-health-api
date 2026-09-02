@@ -24,6 +24,12 @@ resource "google_project_service" "run" {
   disable_on_destroy = false
 }
 
+# required for WIF token exchange (google-github-actions/auth in CI)
+resource "google_project_service" "iam_credentials" {
+  service            = "iamcredentials.googleapis.com"
+  disable_on_destroy = false
+}
+
 resource "google_project_service" "artifact_registry" {
   service            = "artifactregistry.googleapis.com"
   disable_on_destroy = false
@@ -42,7 +48,12 @@ resource "google_cloud_run_v2_service" "api" {
 
   template {
     # cost cap: public endpoint on a small budget
+    # ponytail: provider v6 reports manual/min_instance_count drift (0 vs
+    # null) on every plan regardless of this config — cosmetic, doesn't
+    # touch the deployed image/revision (ignore_changes covers that below).
+    # Upgrade path: revisit if a future provider version stops normalizing it.
     scaling {
+      min_instance_count = 0
       max_instance_count = 2
     }
     containers {
