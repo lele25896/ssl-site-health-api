@@ -41,11 +41,19 @@ Service: `ssl-site-health-api` · GCP project `site-health-api-178823` · region
 - GitHub Actions pinned by major tag, not SHA.
 - No response cache (`ponytail:` note in `app/checks.py`).
 
+## CI/CD (done 2026-09-02)
+
+- Imported all 8 manually-created resources into terraform state (3 project-service enables, artifact registry repo, Cloud Run service + its public IAM binding, and 2 more APIs — `iamcredentials.googleapis.com` and `cloudresourcemanager.googleapis.com` — that turned out to be required for WIF/`google_project_service` itself and weren't in the original manual-setup steps). `terraform apply` also created the uptime check monitor that was designed but never actually created.
+- Fixed `.github/workflows/deploy.yml`: it triggered on `branches: [main]` but this repo's default branch is `master` — CI had never once run. Changed all 3 occurrences to `master`.
+- Set up Workload Identity Federation from scratch, mirroring `defect-classifier-api`'s working setup: pool `github-pool`, OIDC provider `github-provider` scoped to `assertion.repository=='lele25896/ssl-site-health-api'`, service account `github-ci@site-health-api-178823.iam.gserviceaccount.com` with `artifactregistry.admin`/`iam.serviceAccountUser`/`monitoring.editor`/`run.admin`/`serviceusage.serviceUsageAdmin` at project level plus `storage.admin` scoped to just the tfstate bucket. Repo secrets `WIF_PROVIDER`, `WIF_SERVICE_ACCOUNT`, `GCP_PROJECT_ID` set via `gh secret set`.
+- First real CI run went green end-to-end (test → terraform plan/apply → build/push image → `deploy-cloudrun@v2`) on commit `76428b5`. Verified the new revision (`ssl-site-health-api-00004-mmq`) kept the `RAPIDAPI_PROXY_SECRET` env var and still enforces the proxy-secret check correctly.
+- Known harmless: every `terraform plan` reports a cosmetic `min_instance_count`/`manual_instance_count` `0 → null` diff on the Cloud Run service (provider quirk, doesn't touch the deployed image — `ignore_changes` covers that). CI's `terraform apply -auto-approve` will silently no-op this each run.
+
 ## Next steps
 
 1. ~~Commit these changes and push~~ — done (commit `0a767b5`, pushed to `origin/master`).
 2. ~~Rebuild + push image with fixes 1–3~~ — done, digest `sha256:a7468cc5d6...`.
 3. ~~Deploy~~ — done, `ssl-site-health-api-00001-p8s` serving 100% traffic.
 4. ~~Wire into RapidAPI Studio + add proxy-secret check~~ — done, see above.
-5. `terraform import` bucket, artifact repo, Cloud Run service; set repo secrets `WIF_PROVIDER`, `WIF_SERVICE_ACCOUNT`, `GCP_PROJECT_ID`.
+5. ~~`terraform import` + WIF secrets for CI~~ — done, see CI/CD section above.
 6. Finish Hub Listing (logo, long description) and Monetize tab (free 15/day → Pro $4.99 → Ultra $9.99), then submit for review/publish to Hub.
